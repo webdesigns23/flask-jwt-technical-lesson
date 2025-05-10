@@ -61,7 +61,9 @@ npm start --prefix client
 
 ### Task 1: Define the Problem
 
-Our current app uses session-based authentication, where the backend stores login state in the session. This approach doesn't scale well for stateless services or frontend frameworks like React that expect token-based authentication.
+Our current app uses session-based authentication, where the backend stores
+login state in the session. This approach doesn't scale well for stateless
+services or frontend frameworks like React that expect token-based authentication.
 
 We need to:
 * Remove session reliance
@@ -71,7 +73,8 @@ We need to:
 
 ### Task 2: Determine the Design
 
-To build a secure, stateless authentication system with JWT, we’ll update both the backend and frontend to follow this architecture:
+To build a secure, stateless authentication system with JWT, we’ll update
+both the backend and frontend to follow this architecture:
 
 ---
 
@@ -100,7 +103,8 @@ Removes the token from storage on logout and clears user state.
 
 --- 
 
-This model separates concerns cleanly: the backend verifies tokens without holding state, and the frontend manages the token lifecycle.
+This model separates concerns cleanly: the backend verifies tokens without
+holding state, and the frontend manages the token lifecycle.
 
 
 ### Task 3: Develop, Test, and Refine the Code
@@ -453,7 +457,7 @@ Run both the Flask app and React application. Try the following:
   - Verify you can't signup with an existing user name.
 - Log In
   - Verify you can log in with an existing user.
-  - Verify that if the passowrd is incorrect you aren't logged in.
+  - Verify that if the password is incorrect, you aren't logged in.
 - Log  out
   - The logout button should navigate you back to the login page.
 - Check Session

@@ -2,11 +2,22 @@
 
 ## Introduction
 
-In previous lessons, we authenticated users using Flask sessions—storing identity on the server and maintaining state between requests. While this works in many scenarios, it creates tight coupling between the client and backend and doesn't scale well for stateless APIs, especially when building with React or other frontend frameworks.
+In previous lessons, we authenticated users using Flask sessions, which
+store identity on the server and maintaining state between requests.
+While this works in many scenarios, it creates tight coupling between 
+the client and backend and doesn't scale well for stateless APIs, 
+especially when building with React or other frontend frameworks.
 
-In this lesson, we’ll refactor our existing Flask and React app to use JWT (JSON Web Tokens) instead of sessions. JWT is an industry-standard method for transmitting verified identity claims between parties. It allows our API to stay stateless while securely identifying users.
+In this lesson, we’ll refactor our existing Flask and React app to use 
+JWT (JSON Web Tokens) instead of sessions. JWT is an industry-standard 
+method for transmitting verified identity claims between parties. It 
+allows our API to stay stateless while securely identifying users.
 
-You’ll implement token generation during login and signup, replace all session logic with JWT verification, and update your frontend to send tokens with each protected request. This shift mirrors how most real-world single-page apps, mobile clients, and distributed services handle authentication today.
+You’ll implement token generation during login and signup, replace all 
+session logic with JWT verification, and update your frontend to send 
+tokens with each protected request. This shift mirrors how most 
+real-world single-page apps, mobile clients, and distributed services 
+handle authentication today.
 
 ## Tools & Resources
 

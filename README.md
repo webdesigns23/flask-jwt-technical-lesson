@@ -10,7 +10,7 @@ You’ll implement token generation during login and signup, replace all session
 
 ## Tools & Resources
 
-- [GitHub Repo]()
+- [GitHub Repo](https://github.com/learn-co-curriculum/flask-jwt-technical-lesson)
 - [Flask JWT Extended Documentation](https://flask-jwt-extended.readthedocs.io/en/stable/basic_usage.html)
 
 ## Set Up

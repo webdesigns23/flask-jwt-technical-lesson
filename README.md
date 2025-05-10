@@ -2,7 +2,11 @@
 
 ## Introduction
 
+In previous lessons, we authenticated users using Flask sessions—storing identity on the server and maintaining state between requests. While this works in many scenarios, it creates tight coupling between the client and backend and doesn't scale well for stateless APIs, especially when building with React or other frontend frameworks.
 
+In this lesson, we’ll refactor our existing Flask and React app to use JWT (JSON Web Tokens) instead of sessions. JWT is an industry-standard method for transmitting verified identity claims between parties. It allows our API to stay stateless while securely identifying users.
+
+You’ll implement token generation during login and signup, replace all session logic with JWT verification, and update your frontend to send tokens with each protected request. This shift mirrors how most real-world single-page apps, mobile clients, and distributed services handle authentication today.
 
 ## Tools & Resources
 
@@ -56,21 +60,37 @@ We need to:
 
 ### Task 2: Determine the Design
 
-We’ll implement the following architecture:
+To build a secure, stateless authentication system with JWT, we’ll update both the backend and frontend to follow this architecture:
 
-Backend:
-* POST /login: Authenticates user and returns a JWT
-* GET /check_session: Returns current user (if they exist)
-* POST /logout: Frontend simply deletes the token
-* Protected Routes: Use JWT rather than sessions to protect routes
+---
 
-Frontend
-* Stores JWT in memory or localStorage
-* Sends token in the Authorization header of protected requests:
+#### Backend (Flask)
 
-```makefile
+Login: Accepts credentials and issues a signed JWT if valid.
+
+Signup: Creates a user and issues a JWT on success.
+
+Check Session: Uses the token to retrieve the current user identity.
+
+Protected Routes: Require valid JWT via verify_jwt_in_request() or @jwt_required.
+
+---
+
+#### Frontend (React)
+Stores the JWT token in localStorage after login/signup.
+
+Includes the token in an Authorization header for protected requests:
+
+```
 Authorization: Bearer <token>
 ```
+
+Removes the token from storage on logout and clears user state.
+
+--- 
+
+This model separates concerns cleanly: the backend verifies tokens without holding state, and the frontend manages the token lifecycle.
+
 
 ### Task 3: Develop, Test, and Refine the Code
 
@@ -414,9 +434,24 @@ function handleLogoutClick() {
 }
 ```
 
-#### Step x: Verify and Refine your Code
+#### Step 9: Verify and Refine your Code
 
-#### Step x: Commit and Push Git History
+Run both the Flask app and React application. Try the following:
+- Sign Up 
+  - Verify valid signup is successful and logs you in.
+  - Verify you can't signup with an existing user name.
+- Log In
+  - Verify you can log in with an existing user.
+  - Verify that if the passowrd is incorrect you aren't logged in.
+- Log  out
+  - The logout button should navigate you back to the login page.
+- Check Session
+  - When logged in, on refresh you should stay logged in.
+  - When logged out, on refresh you should stay logged out.
+
+Also verify the frontend doesn't crash as you test the functionality. 
+
+#### Step 10: Commit and Push Git History
 
 * Commit and push your code:
 
@@ -439,3 +474,27 @@ Optional Best Practice documentation steps:
 * If needed, update git ignore to remove sensitive data
 
 ## Considerations
+
+### JWTs Are Stateless
+
+The server does not store login state.
+
+Logging out means deleting the token on the client—there’s no session to destroy.
+
+### Token Security
+
+In production, store tokens in HTTP-only cookies or use short expiration windows.
+
+Avoid long-lived tokens in localStorage in high-risk apps (susceptible to XSS).
+
+### Protecting Routes
+
+Use verify_jwt_in_request() in @app.before_request to guard global access.
+
+Alternatively, use @jwt_required() decorators on individual resources.
+
+### Token Must Be Verified on Each Request
+
+JWTs are self-contained—they must be sent with every request, or access will fail.
+
+Forgetting to send the Authorization header will result in 401 Unauthorized.

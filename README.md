@@ -225,6 +225,25 @@ class CheckSession(Resource):
         return UserSchema().dump(user), 200
 ```
 
+Finally, "check session" doesn't really make sense for naming since we are no longer using sessions.
+
+Let's rename the route to "/me":
+
+```python
+class WhoAmI(Resource):
+    def get(self):
+        user_id = get_jwt_identity()
+            
+        user = User.query.filter(User.id == user_id).first()
+        
+        return UserSchema().dump(user), 200
+```
+
+```python
+# api.add_resource(CheckSession, '/check_session', endpoint='check_session')
+api.add_resource(WhoAmI, '/me', endpoint='me')
+```
+
 #### Step 4: Refactor Sign Up
 
 Let's refactor sign up next:
@@ -290,7 +309,7 @@ def check_if_logged_in():
         return {'error': '401 Unauthorized'}, 401
 ```
 
-> Note that to use the method we're using in CheckSession (and we'll use in other protected
+> Note that to use the method we're using in WhoAmI (and we'll use in other protected
 > routes) `get_jwt_identity` requires us to call `verify_jwt_in_request` first or use the 
 > `@jwt_required` decorator.
 
@@ -379,8 +398,8 @@ In the useEffect for `App.js`, add an Authorization header with our token from l
 
 ```javascript
 useEffect(() => {
-  // auto-login
-  fetch("/check_session", {
+  // change from /check_session to me and add header
+  fetch("/me", {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`
       }
@@ -460,7 +479,7 @@ Run both the Flask app and React application. Try the following:
   - Verify that if the password is incorrect, you aren't logged in.
 - Log  out
   - The logout button should navigate you back to the login page.
-- Check Session
+- Check Session / Me
   - When logged in, on refresh you should stay logged in.
   - When logged out, on refresh you should stay logged out.
 

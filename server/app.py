@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import request, session
+from flask import request, session, jsonify, make_response
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
 
@@ -11,12 +11,11 @@ from models import User, Recipe, UserSchema, RecipeSchema
 def check_if_logged_in():
     open_access_list = [
         'signup',
-        'login',
-        'check_session'
+        'login'
     ]
 
     if (request.endpoint) not in open_access_list and (not session.get('user_id')):
-        return {'error': '401 Unauthorized'}, 401
+        return {'errors': ['401 Unauthorized']}, 401
 
 class Signup(Resource):
     def post(self):
@@ -41,18 +40,15 @@ class Signup(Resource):
             session['user_id'] = user.id
             return UserSchema().dump(user), 201
         except IntegrityError:
-            return {'error': '422 Unprocessable Entity'}, 422
+            return {'errors': ['422 Unprocessable Entity']}, 422
 
 class CheckSession(Resource):
     def get(self):
 
-        if session.get('user_id'):
-            
-            user = User.query.filter(User.id == session['user_id']).first()
-            
-            return UserSchema().dump(user), 200
+        user = User.query.filter(User.id == session['user_id']).first()
+        
+        return UserSchema().dump(user), 200
 
-        return {}, 401
 
 class Login(Resource):
     def post(self):
@@ -66,15 +62,13 @@ class Login(Resource):
             session['user_id'] = user.id
             return UserSchema().dump(user), 200
 
-        return {'error': '401 Unauthorized'}, 401
+        return {'errors': ['401 Unauthorized']}, 401
 
 class Logout(Resource):
     def delete(self):
 
-        if session.get('user_id'):
-            session['user_id'] = None
-            return {}, 204
-        return {}, 401
+        session['user_id'] = None
+        return {}, 204
 
 class RecipeIndex(Resource):
     def get(self):
@@ -98,7 +92,7 @@ class RecipeIndex(Resource):
             return RecipeSchema().dump(recipe), 201
 
         except IntegrityError:
-            return {'error': '422 Unprocessable Entity'}, 422
+            return {'errors': ['422 Unprocessable Entity']}, 422
 
 api.add_resource(Signup, '/signup', endpoint='signup')
 api.add_resource(CheckSession, '/check_session', endpoint='check_session')

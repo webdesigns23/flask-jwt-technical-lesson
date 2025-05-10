@@ -144,7 +144,7 @@ class Login(Resource):
             session['user_id'] = user.id
             return UserSchema().dump(user), 200
 
-        return {'error': '401 Unauthorized'}, 401
+        return {'errors': ['401 Unauthorized']}, 401
 ```
 
 Let's refactor to use JWT:
@@ -162,7 +162,7 @@ class Login(Resource):
             token = create_access_token(identity=user.id)
             return make_response(jsonify(token=access_token, user=UserSchema().dump(user)), 200)
 
-        return {'error': 'Unauthorized'}, 401
+        return {'errors': ['401 Unauthorized']}, 401
 ```
 
 #### Step 3: Add JWT to Check Session Route
@@ -172,6 +172,7 @@ Take a peek at our current check session route:
 ```python
 class CheckSession(Resource):
     def get(self):
+
         user = User.query.filter(User.id == session['user_id']).first()
         
         return UserSchema().dump(user), 200
@@ -201,11 +202,7 @@ Instead of session['user_id'], just like login we'll use create_access_token and
 
 ```python
 access_token = create_access_token(identity=user.id)
-```
 
-Then we need to update what we're returning to the frontend to include our token:
-
-```python
 return make_response(jsonify(token=access_token, user=UserSchema().dump(user)), 200)
 ```
 
@@ -219,10 +216,8 @@ As such, let's remove the Logout resource and remove it from the api
 # class Logout(Resource):
 #     def delete(self):
 
-#         if session.get('user_id'):
-#             session['user_id'] = None
-#             return {}, 204
-#         return {}, 401
+#         session['user_id'] = None
+#         return {}, 204
 ```
 
 ```python

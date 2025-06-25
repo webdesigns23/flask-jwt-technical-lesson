@@ -194,7 +194,7 @@ class Login(Resource):
         user = User.query.filter(User.username == username).first()
 
         if user and user.authenticate(password):
-            token = create_access_token(identity=user.id)
+            token = create_access_token(identity=str(user.id))
             return make_response(jsonify(token=access_token, user=UserSchema().dump(user)), 200)
 
         return {'errors': ['401 Unauthorized']}, 401
@@ -255,7 +255,7 @@ session['user_id'] = user.id
 Instead of session['user_id'], just like login we'll use create_access_token and return that token.
 
 ```python
-access_token = create_access_token(identity=user.id)
+access_token = create_access_token(identity=str(user.id))
 
 return make_response(jsonify(token=access_token, user=UserSchema().dump(user)), 200)
 ```
